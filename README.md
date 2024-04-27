@@ -1,4 +1,4 @@
-# GreenSpark
+# NuxtTemplate
 
 [Документация по проекту](documentation/readme.md)
 
