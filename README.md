@@ -1,75 +1,86 @@
-# Nuxt 3 Minimal Starter
+# GreenSpark
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+[Документация по проекту](documentation/readme.md)
 
-## Setup
+[Чеклист](documentation/checklist.md)
 
-Make sure to install the dependencies:
+Документация по nuxt доступна здесь: [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction)
+
+Примеры элементов дизайна и реализованных компонентов доступны по адресу http://localhost:3000/styleguide
+
+В исходном коде страница расположена здесь: pages/Styleguide.vue. На этой странице подключаются компоненты с примерами различных блоков. Открыв нужный блок можно посмотреть примеры.
+
+## Используемые библиотеки
+
+В проекте используются готовые библиотеки для реализации различного функционала.
+Документацию по ним можно посмотреть по ссылкам.
+
+- [Bootstrap 5](https://getbootstrap.com/) - сетка, инпуты и прочие элементы. JS часть используется довольно редко из-за недостаточного удобства, гибкости и недостаточного функционала.
+- [floating-vue](https://github.com/Akryum/floating-vue) - используется для реализации выпадающих меню (при клике и наведении).
+- [Swiper](https://swiperjs.com) - используется для реализации слайдеров. Готовые vue компоненты не используются из-за недостаточной гибкости. В проекте реализованы собственные компоненты в которых используется swiper в чистом виде.
+
+## Наборы иконок:
+
+- [heroicons](https://heroicons.com/)
+- [Feather](https://feathericons.com/)
+- [svgrepo](https://www.svgrepo.com/)
+
+Для удобства исходный код иконок копируется и создается vue компонент в который размещается код иконки.
+
+Иконки расположены здесь: `components/Icons`
+
+Названия компонентов необходимо указывать с префиксом Icon для удобства работы с автокомплитом в IDE
+
+
+
+## Установка
+
+Открываем консоль и клонируем проект себе:
 
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+git clone git@github.com:enterprise-it-ru/nuxt-template.git nuxt-template
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Переходим в папку в которую склонировался проект (в команде выше это greenspark-frontend)
 
 ```bash
-# npm
+cd nuxt-template
+```
+
+Устанавливаем зависимости:
+
+```bash
+npm install
+```
+
+Теперь нужно создать файл с переменными окружения. Для этого копируем файл .env.example и сохраняем его просто с именем .env
+
+Скопировать можно с помощью команды:
+
+```bash
+cp .env.example .env
+```
+
+В этом файле при необходимости изменяем домен проекта и прочие настройки если они есть.
+
+## Разработка
+
+Запускаем сервер разработки. Он будет доступен по адресу `http://localhost:3000`
+
+```bash
 npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
 ## Production
 
-Build the application for production:
+Для сборки проекта в боевом режиме используется команда:
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+Локально можно запустить сервер и посмотреть как отрабатывает SSR и прочие возможности следующей командой:
 
 ```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
