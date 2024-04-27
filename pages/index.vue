@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<div>привет Колян</div>
+  <div>Hello world!</div>
 </template>
 
 <style scoped lang="scss">

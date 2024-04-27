@@ -35,7 +35,7 @@ const props = withDefaults(defineProps<InputProps>(), {
   disabled: false,
   readonly: false,
   required: false,
-  inputDelay: 0,
+  inputDelay: 0
 })
 
 const emits = defineEmits(['update:modelValue'])
