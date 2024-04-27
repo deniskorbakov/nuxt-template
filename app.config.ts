@@ -1,3 +1,3 @@
 export default defineAppConfig({
-  title: 'Avtolev'
+  title: 'My New Project'
 })
