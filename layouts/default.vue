@@ -1,14 +1,16 @@
 <script lang="ts" setup>
+import { user } from '~/composables/userMock'
+
 const links = [
   {
     id: 1,
-    name: 'Пользователи',
-    link: '/users'
+    name: 'Челленджи',
+    link: '/challenges'
   },
   {
     id: 2,
-    name: 'Мероприятия',
-    link: '/events'
+    name: 'Команды',
+    link: '/teams'
   },
   {
     id: 3,
@@ -28,12 +30,12 @@ watchEffect(() => {
 
 <template>
   <div>
-    <header v-if="isAuth" class="header">
+    <!--        Если юзер залогинен - шапка показывается-->
+    <header v-if="isAuth && user.is_confirmed === true" class="header">
       <div class="header__layout">
         <div class="header__block">
-          <img class="w-14" src="../public/ogetto.png" alt="">
+          <img src="../public/ogetto.svg" alt="">
         </div>
-        <!--        Если юзер залогинен - шапка показывается-->
         <nav class="flex gap-20">
           <RouterLink
             v-for="link in links"

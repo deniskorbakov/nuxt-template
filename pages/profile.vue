@@ -1,11 +1,7 @@
 <script setup lang="ts">
 
-const user = ref({
-  id: 1,
-  is_confirmed: false,
-  name: 'Alexander',
-  surname: 'Kovalenko'
-})
+import { ref } from 'vue'
+import { user } from '~/composables/userMock'
 
 const image = ref('')
 // const date = ref('')
@@ -15,104 +11,132 @@ const telegram = ref('')
 const phoneNumber = ref('')
 const about = ref('')
 
+const errors = ref({
+  surname: false,
+  name: false,
+  patronymic: false,
+  email: false,
+  password: false,
+  password_confirmation: false
+})
+
+const activeButton = ref<'personal' | 'team'>('personal')
+
+function setActiveButton(button: 'personal' | 'team') {
+  activeButton.value = button
+}
+
 </script>
 
 <template>
   <NuxtLayout>
     <div
-      v-if="user.id !== undefined"
-      class="flex flex-col items-center justify-center"
+      v-if="user.is_confirmed === true"
+      class="flex gap-[15%] mx-auto w-full max-w-[1280px] pt-[55px]"
     >
-      <h1 class="mb-10 font-bold">Профиль</h1>
-      <h2 v-if="user.is_confirmed" class="mb-7 text-3xl font-bold">
-        <span class="text-primary-dark-yellow">{{ user.surname }}</span>
-        {{ user.name }}
-      </h2>
-      <div
-        v-if="user.is_confirmed"
-        class="flex flex-col items-center justify-center gap-6"
-      >
-        <div class="flex gap-5">
-          <div class="flex flex-col justify-between gap-4">
-            <div
-              :style="{ 'background-image': `url(${image}` }"
-              class="group flex h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100 bg-cover hover:opacity-75"
-            >
-              <img
-                v-if="!image"
-                src="../public/dragAndDrop.svg"
-                alt="dragAndDrop"
-              >
-              <!--              <FileUpload-->
-              <!--                class="bg-transparent text-gray-400"-->
-              <!--                :class="{-->
-              <!--                  'hidden group-hover:block': image,-->
-              <!--                  block: !image,-->
-              <!--                }"-->
-              <!--                mode="basic"-->
-              <!--                name="avatar"-->
-              <!--                :url="-->
-              <!--                  'http://norm-perdachello.ru:8000/api/upload/' +-->
-              <!--                    user.id-->
-              <!--                "-->
-              <!--                accept="image/*"-->
-              <!--                :max-file-size="1000000"-->
-              <!--                :auto="true"-->
-              <!--                choose-label="Загрузить"-->
-              <!--                @upload="onUpload"-->
-              <!--              />-->
+      <div class="info__block">
+        <div class="info__teams">
+          <h2 class="info__title">Мои команды</h2>
+          <div class="teams__list">
+            <div v-for="team in teams.slice(0, 3)" :key="team.teamId" class="team">
+              <div class="flex gap-3">
+                <img :src="team.imagePath" alt="" class="team__img">
+                <div сlass="flex flex-col justify-between">
+                  <h3 class="text-xl font-medium">{{ team.name }}</h3>
+                  <span class="text-xs text-gray-500">{{ team.membersNumber }} участника</span>
+                </div>
+              </div>
+              <a class="text-blue-600 hover:underline cursor-pointer">Подробнее</a>
             </div>
           </div>
-          <div class="flex flex-col gap-4">
-<!--            <Calendar-->
-<!--              v-model="date"-->
-<!--              date-format="dd.mm.yy"-->
-<!--              class="form__input !p-0"-->
-<!--              show-icon-->
-<!--              icon-display="input"-->
-<!--              placeholder="Дата рождения"-->
-<!--            />-->
-            <input
-              v-model="position"
-              placeholder="Должность"
-              type="text"
-              class="form__input"
+          <span v-if="teams.length > 3" class="text-xs text-gray-500">Посмотреть все</span>
+        </div>
+        <div class="info__achievements">
+          <h2 class="info__title">Мои достижения</h2>
+          <div class="gap-2 mt-3 flex">
+            <button
+              class="achievement__button"
+              :class="{ 'achievement__button--active': activeButton === 'personal' }"
+              @click="setActiveButton('personal')"
             >
-            <input
-              v-model="department"
-              placeholder="Отдел"
-              type="text"
-              class="form__input"
+              Личные
+            </button>
+
+            <button
+              class="achievement__button"
+              :class="{ 'achievement__button--active': activeButton === 'team' }"
+              @click="setActiveButton('team')"
             >
-            <input
-              v-model="telegram"
-              placeholder="Telegram"
-              type="text"
-              class="form__input"
-            >
-            <input
-              v-model="phoneNumber"
-              placeholder="Номер телефона"
-              type="text"
-              class="form__input"
-            >
-            <textarea
-              v-model="about"
-              class="form__input max-h-[92px] min-h-[92px]"
-              placeholder="Расскажите о себе"
-            />
+              Командные
+            </button>
           </div>
         </div>
-        <button class="form__button" @click="(()=> {})">
-          Сохранить
-        </button>
+        <div class="info__history">
+          <h2 class="info__title">История достижений</h2>
+        </div>
       </div>
-      <h2 v-else class="flex items-center gap-5 text-3xl font-semibold">
-        Ожидайте подтверждение от администратора 😎
-      </h2>
+      <div class="form__block">
+        <div class="form__avatar">
+          <img src="~/public/avatar.png" alt="">
+        </div>
+        <div class="input__block">
+          <div>
+            <h3 class="input__title">Имя</h3>
+            <input
+              v-model="user.name"
+              :class="['form__input', { 'form__input--error': errors.name }]"
+              placeholder="Введите ваше имя"
+              type="text"
+            >
+          </div>
+          <div>
+            <h3 class="input__title">Фамилия</h3>
+            <input
+              v-model="user.surname"
+              :class="['form__input', { 'form__input--error': errors.surname }]"
+              placeholder="Введите фамилию"
+              type="text"
+            >
+          </div>
+          <div>
+            <h3 class="input__title">Отчество</h3>
+            <input
+              v-model="user.patronymic"
+              :class="['form__input', { 'form__input--error': errors.patronymic }]"
+              placeholder="Введите отчество"
+              type="text"
+            >
+          </div>
+          <div>
+            <h3 class="input__title">Почта</h3>
+            <input
+              v-model="user.email"
+              :class="['form__input', { 'form__input--error': errors.email }]"
+              placeholder="Введите ваш E-mail"
+              type="text"
+            >
+          </div>
+          <div>
+            <h3 class="input__title">Расскажите о своих целях</h3>
+            <textarea
+              v-model="user.about"
+              :class="['form__textarea', { 'form__input--error': errors.email }]"
+              placeholder="Описание"
+              type="text"
+            />
+          </div>
+          <button type="submit" class="form__button">
+            Продолжить
+          </button>
+        </div>
+      </div>
     </div>
-    <div v-else class="flex flex-col items-center justify-center font-bold">
-      <h1>Загрузка...</h1>
+    <div v-else class="confirm__screen">
+      <img src="~/public/ogetto2.svg" alt="">
+      <h2 class="text-center">
+        Ожидайте подтверждение <br>
+        от администратора 😎
+      </h2>
     </div>
   </NuxtLayout>
 </template>
@@ -127,11 +151,72 @@ const about = ref('')
   font-family: Montserrat, sans-serif !important;
 }
 
+.form__block {
+  @apply flex justify-center max-w-[560px] flex-col;
+}
+
+.input__block {
+  @apply gap-4 flex flex-col mb-12;
+}
+
+.form__avatar {
+  @apply mb-10 rounded-2xl;
+}
+
+.confirm__screen {
+  @apply flex w-full h-screen justify-center flex-col items-center gap-5 text-4xl font-semibold;
+}
+
 .form__input {
-  @apply min-w-[300px] rounded-md bg-gray-100 p-4;
+  @apply min-w-full rounded-full bg-white border border-gray-300 px-6 py-3;
+}
+
+//TODO Пофиксить хрень с бордером
+.form__textarea {
+  @apply min-w-[500px] resize-none min-h-[120px] rounded-3xl outline-primary-dark-yellow bg-white border border-gray-300 px-6 py-3;
+}
+
+.input__title {
+  @apply text-xs text-gray-500 ps-6 mb-1.5;
+}
+
+.form__input--error {
+  @apply transform transition-all duration-300 ease-in-out outline-red-500 focus:outline-primary-dark-yellow;
 }
 
 .form__button {
-  @apply rounded-full bg-primary-dark-yellow px-[1.6em] py-[0.6em] hover:bg-primary-yellow;
+  @apply rounded-full mt-12 w-min bg-primary-dark-yellow px-10 py-4 hover:bg-primary-yellow;
+}
+
+.info__block {
+  @apply w-full max-w-[500px];
+}
+
+.info__teams {
+  @apply mb-12;
+}
+
+.info__title {
+  @apply text-3xl;
+}
+
+.teams__list {
+  @apply pt-8 gap-3 flex flex-col pb-6;
+}
+
+.team {
+  @apply flex justify-between items-center;
+}
+
+.team__img {
+  @apply bg-primary-yellow w-12 h-12 rounded-2xl;
+}
+
+.achievement__button {
+  @apply py-1 px-3 rounded-full text-xs bg-gray-200 text-gray-400;
+}
+
+.achievement__button--active {
+  @apply bg-yellow-200 text-yellow-500;
 }
 </style>

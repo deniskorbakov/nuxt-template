@@ -170,7 +170,7 @@ function setUser () {
 }
 
 .form__input--error {
-  @apply transform transition-all duration-300 ease-in-out outline-red-500;
+  @apply transform transition-all duration-300 ease-in-out outline-red-500 focus:outline-primary-dark-yellow;
 }
 
 .form__button {
