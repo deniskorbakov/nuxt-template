@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import ErrorScreen from '~/components/Screens/ErrorScreen.vue'
 import { user } from '~/composables/userMock'
+import { historyChallenges } from '~/composables/userHistoryChallengeMock'
+import { achievementsProf } from '~/composables/achievementProfileMock'
 
 definePageMeta({
   middleware: 'auth'
@@ -13,6 +15,15 @@ const department = ref('')
 const telegram = ref('')
 const phoneNumber = ref('')
 const about = ref('')
+
+const todayDate = new Date().getTime()
+
+function dateToTimestamp (dateString) {
+  const [day, month, year] = dateString.split('.').map(Number)
+  const date = new Date(year, month - 1, day)
+
+  return date.getTime()
+}
 
 const errors = ref({
   surname: false,
@@ -73,9 +84,34 @@ function setActiveButton (button: 'personal' | 'team') {
               Командные
             </button>
           </div>
+          <div class="achievements__list">
+            <div v-for="achievement in achievementsProf.filter(a => activeButton === a.type)" :key="achievement.achievementId">
+              <div class="achievement">
+                <img v-if="achievement.imagePath" :src="achievement.imagePath" alt="">
+                <img v-else src="/public/ach1.png" alt="">
+              </div>
+            </div>
+          </div>
         </div>
         <div class="info__history">
           <h2 class="info__title">История достижений</h2>
+        </div>
+        <div class="history__list">
+          <div v-for="challenge in historyChallenges.slice(0, 3)" :key="challenge.challengeId" class="challenge">
+            <div class="flex gap-3">
+              <img :src="challenge.imagePath" alt="" class="challenge__img">
+              <div сlass="flex flex-col justify-between">
+                <h3 class="text-xl font-medium">{{ challenge.name }}</h3>
+                <div v-if="todayDate >= dateToTimestamp(challenge.endDate)">
+                  <span class="text-xs text-gray-500">Завершен</span>
+                </div>
+                <div v-else>
+                  <span class="text-xs text-lime-600">Активные</span>
+                </div>
+              </div>
+            </div>
+            <a class="text-blue-600 hover:underline cursor-pointer">Подробнее</a>
+          </div>
         </div>
       </div>
       <div class="form__block">
@@ -187,7 +223,7 @@ function setActiveButton (button: 'personal' | 'team') {
 }
 
 .info__block {
-  @apply w-full max-w-[500px];
+  @apply w-full max-w-[517px];
 }
 
 .info__teams {
@@ -216,5 +252,37 @@ function setActiveButton (button: 'personal' | 'team') {
 
 .achievement__button--active {
   @apply bg-yellow-200 text-yellow-500;
+}
+
+.history__list {
+  @apply pt-8 gap-3 flex flex-col pb-6;
+}
+
+.challenge {
+  @apply flex justify-between items-center;
+}
+
+.challenge__img {
+  @apply bg-primary-yellow w-12 h-12 rounded-2xl;
+}
+
+.achievements__list {
+  @apply pt-8 gap-3 pb-6;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.achievement {
+  @apply rounded-2xl;
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  background-color: rgba(253, 255, 222, 0.52);;
+
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
