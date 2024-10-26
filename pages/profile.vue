@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import ErrorScreen from '~/components/Screens/ErrorScreen.vue'
+import { user } from '~/composables/userMock'
+
 definePageMeta({
   middleware: 'auth'
 })
-
-import { ref } from 'vue'
-import { user } from '~/composables/userMock'
 
 const image = ref('')
 // const date = ref('')
@@ -25,7 +25,7 @@ const errors = ref({
 
 const activeButton = ref<'personal' | 'team'>('personal')
 
-function setActiveButton(button: 'personal' | 'team') {
+function setActiveButton (button: 'personal' | 'team') {
   activeButton.value = button
 }
 
@@ -134,13 +134,12 @@ function setActiveButton(button: 'personal' | 'team') {
         </div>
       </div>
     </div>
-    <div v-else class="confirm__screen">
-      <img src="~/public/ogetto2.svg" alt="">
-      <h2 class="text-center">
+    <template v-else>
+      <error-screen>
         Ожидайте подтверждение <br>
         от администратора 😎
-      </h2>
-    </div>
+      </error-screen>
+    </template>
   </NuxtLayout>
 </template>
 
@@ -164,10 +163,6 @@ function setActiveButton(button: 'personal' | 'team') {
 
 .form__avatar {
   @apply mb-10 rounded-2xl;
-}
-
-.confirm__screen {
-  @apply flex w-full h-screen justify-center flex-col items-center gap-5 text-4xl font-semibold;
 }
 
 .form__input {
