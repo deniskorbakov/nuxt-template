@@ -2,8 +2,16 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+definePageMeta({
+  middleware: 'auth'
+})
+
+const user = useUser()
+const notifications = useNotifications()
+
 const router = useRouter()
-const user = ref({
+
+const userData = ref({
   email: '',
   password: ''
 })
@@ -17,16 +25,38 @@ const errors = ref({
 function login (ev) {
   ev.preventDefault()
 
-  errors.value.email = user.value.email.trim() === ''
-  errors.value.password = user.value.password.trim() === ''
+  errors.value.email = userData.value.email.trim() === ''
+  errors.value.password = userData.value.password.trim() === ''
 
   if (errors.value.email || errors.value.password) {
     return null
   }
 
-  // store.dispatch('login', user.value).then(() => {
-  router.push('/profile')
-  // })
+  useClientApiFetch('api/auth',
+    {
+      method: 'POST',
+      body: {
+        email: userData.value.email,
+        password: userData.value.password
+      }
+    }
+  ).then((response) => {
+    user.token.value = response.token
+
+    router.push('/profile')
+
+    notifications.success(
+      'auth_success',
+      'Auth success',
+      'you succes logint'
+    )
+  }).catch((err) => {
+    notifications.error(
+      'auth_error',
+      'Auth error',
+      err
+    )
+  })
 }
 </script>
 
@@ -41,7 +71,7 @@ function login (ev) {
             <div>
               <h3 class="input__title">Почта</h3>
               <input
-                v-model="user.email"
+                v-model="userData.email"
                 :class="['form__input', { 'form__input--error': errors.email }]"
                 placeholder="Введите вашу почту"
                 type="text"
@@ -50,7 +80,7 @@ function login (ev) {
             <div>
               <h3 class="input__title">Пароль</h3>
               <input
-                v-model="user.password"
+                v-model="userData.password"
                 :class="['form__input', { 'form__input--error': errors.password }]"
                 placeholder="Введите пароль"
                 type="password"

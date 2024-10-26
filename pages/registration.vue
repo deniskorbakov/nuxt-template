@@ -2,10 +2,16 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+definePageMeta({
+  middleware: 'auth'
+})
+
+const user = useUser()
+const notifications = useNotifications()
+
 const router = useRouter()
 
-// Создаем реактивные переменные для хранения данных о пользователе
-const user = ref({
+const userData = ref({
   surname: '',
   name: '',
   patronymic: '',
@@ -14,7 +20,6 @@ const user = ref({
   password_confirmation: ''
 })
 
-// Переменные для отслеживания ошибок
 const errors = ref({
   surname: false,
   name: false,
@@ -24,32 +29,52 @@ const errors = ref({
   password_confirmation: false
 })
 
-// Функция для регистрации пользователя
 function register (ev: Event) {
   ev.preventDefault()
 
-  // Проверяем заполненность полей
-  errors.value.surname = user.value.surname.trim() === ''
-  errors.value.name = user.value.name.trim() === ''
-  errors.value.patronymic = user.value.patronymic.trim() === ''
-  errors.value.email = user.value.email.trim() === ''
-  errors.value.password = user.value.password.trim() === ''
-  errors.value.password_confirmation = user.value.password_confirmation.trim() === ''
+  errors.value.surname = userData.value.surname.trim() === ''
+  errors.value.name = userData.value.name.trim() === ''
+  errors.value.patronymic = userData.value.patronymic.trim() === ''
+  errors.value.email = userData.value.email.trim() === ''
+  errors.value.password = userData.value.password.trim() === ''
+  errors.value.password_confirmation = userData.value.password_confirmation.trim() === ''
 
-  // Проверка совпадения паролей
-  if (user.value.password !== user.value.password_confirmation) {
+  if (userData.value.password !== userData.value.password_confirmation) {
     errors.value.password_confirmation = true
   }
 
-  // Если есть ошибки, выходим из функции
   if (Object.values(errors.value).some(error => error)) {
     return null
   }
 
-  // Выполнение логики регистрации после валидации
-  // store.dispatch('register', user.value).then(() => {
-  router.push('/profile')
-  // })
+  useClientApiFetch('api/register',
+    {
+      method: 'POST',
+      body: {
+        surname: userData.value.surname,
+        name: userData.value.name,
+        patronymic: userData.value.patronymic,
+        email: userData.value.email,
+        password: userData.value.password
+      }
+    }
+  ).then((response) => {
+    user.token.value = response.token
+
+    router.push('/profile')
+
+    notifications.success(
+      'register_success',
+      'Register success',
+      'wait confirm account'
+    )
+  }).catch((err) => {
+    notifications.error(
+      'register_error',
+      'Register error',
+      err
+    )
+  })
 }
 
 function setUser () {
@@ -68,7 +93,7 @@ function setUser () {
             <div>
               <h3 class="input__title">Фамилия</h3>
               <input
-                v-model="user.surname"
+                v-model="userData.surname"
                 :class="['form__input', { 'form__input--error': errors.surname }]"
                 placeholder="Введите фамилию"
                 type="text"
@@ -77,7 +102,7 @@ function setUser () {
             <div>
               <h3 class="input__title">Имя</h3>
               <input
-                v-model="user.name"
+                v-model="userData.name"
                 :class="['form__input', { 'form__input--error': errors.name }]"
                 placeholder="Введите ваше имя"
                 type="text"
@@ -86,7 +111,7 @@ function setUser () {
             <div>
               <h3 class="input__title">Отчество</h3>
               <input
-                v-model="user.patronymic"
+                v-model="userData.patronymic"
                 :class="['form__input', { 'form__input--error': errors.patronymic }]"
                 placeholder="Введите ваше отчество"
                 type="text"
@@ -95,7 +120,7 @@ function setUser () {
             <div>
               <h3 class="input__title">Почта</h3>
               <input
-                v-model="user.email"
+                v-model="userData.email"
                 :class="['form__input', { 'form__input--error': errors.email }]"
                 placeholder="Введите ваш E-mail"
                 type="text"
@@ -104,7 +129,7 @@ function setUser () {
             <div>
               <h3 class="input__title">Пароль</h3>
               <input
-                v-model="user.password"
+                v-model="userData.password"
                 :class="['form__input', { 'form__input--error': errors.password }]"
                 placeholder="Придумайте пароль"
                 type="password"
@@ -113,7 +138,7 @@ function setUser () {
             <div>
               <h3 class="input__title">Пароль</h3>
               <input
-                v-model="user.password_confirmation"
+                v-model="userData.password_confirmation"
                 :class="['form__input', { 'form__input--error': errors.password_confirmation }]"
                 placeholder="Повторите ваш пароль"
                 type="password"
