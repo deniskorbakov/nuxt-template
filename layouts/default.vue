@@ -1,44 +1,21 @@
 <script lang="ts" setup>
 import { user } from '~/composables/userMock'
 
-const links = [
-  {
-    id: 1,
-    name: 'Челленджи',
-    link: '/challenges'
-  },
-  {
-    id: 2,
-    name: 'Команды',
-    link: '/teams'
-  },
-  {
-    id: 3,
-    name: 'Профиль',
-    link: '/profile'
-  }
-]
-
-const route = useRoute()
-
-const isAuth = ref(true)
-
-watchEffect(() => {
-  // Проверяем путь при загрузке страницы
-  isAuth.value = !(route.path === '/login' || route.path === '/registration')
-}); </script>
+const menu = useMenu()
+const userAuth = useUser()
+</script>
 
 <template>
   <div>
     <!--        Если юзер залогинен - шапка показывается-->
-    <header v-if="isAuth && user.is_confirmed === true" class="header">
+    <header v-if="userAuth.isAuth() && user.is_confirmed === true" class="header">
       <div class="header__layout">
         <div class="header__block">
           <img src="../public/ogetto.svg" alt="">
         </div>
         <nav class="flex gap-20">
           <RouterLink
-            v-for="link in links"
+            v-for="link in menu.links"
             :key="link.id"
             exact-active-class="underline text-primary-dark-yellow"
             class="hidden text-black md:block no-underline hover:underline"
