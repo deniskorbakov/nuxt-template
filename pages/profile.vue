@@ -6,6 +6,7 @@ import { achievementsProf } from '~/composables/achievementProfileMock'
 import { teams } from '~/composables/userTeamsMock'
 import MyTeams from '~/components/SlideOvers/MyTeams.vue'
 import MyAchievement from '~/components/SlideOvers/MyAchievement.vue'
+import MyHistoryChallenges from '~/components/SlideOvers/MyHistoryChallenges.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -45,7 +46,6 @@ function setActiveButton (button: 'personal' | 'team') {
 }
 
 const count = ref(0)
-// const count2 = ref(0)
 
 function openMyTeamsSlideover () {
   count.value += 1
@@ -64,6 +64,16 @@ function openMyAchievementSlideover () {
     count: count.value,
     onClose: slideover.close,
     achievementsProf
+  })
+}
+
+function openMyHistoryChallengesSlideover () {
+  count.value += 1
+
+  slideover.open(MyHistoryChallenges, {
+    count: count.value,
+    onClose: slideover.close,
+    historyChallenges
   })
 }
 
@@ -122,24 +132,27 @@ function openMyAchievementSlideover () {
           <span v-if="achievementsProf.length > 3" class="text-xs text-gray-500" @click="openMyAchievementSlideover">Посмотреть все</span>
         </div>
         <div class="info__history">
-          <h2 class="info__title">История достижений</h2>
+          <h2 class="info__title">История челленджей</h2>
         </div>
-        <div class="history__list">
-          <div v-for="challenge in historyChallenges.slice(0, 3)" :key="challenge.challengeId" class="challenge">
-            <div class="flex gap-3">
-              <img :src="challenge.imagePath" alt="" class="challenge__img">
-              <div сlass="flex flex-col justify-between">
-                <h3 class="text-xl font-medium">{{ challenge.name }}</h3>
-                <div v-if="todayDate >= dateToTimestamp(challenge.endDate)">
-                  <span class="text-xs text-gray-500">Завершен</span>
-                </div>
-                <div v-else>
-                  <span class="text-xs text-lime-600">Активные</span>
+        <div class="history-wrapper">
+          <div class="history__list">
+            <div v-for="challenge in historyChallenges.slice(0, 3)" :key="challenge.challengeId" class="challenge">
+              <div class="flex gap-3">
+                <img :src="challenge.imagePath" alt="" class="challenge__img">
+                <div сlass="flex flex-col justify-between">
+                  <h3 class="text-xl font-medium">{{ challenge.name }}</h3>
+                  <div v-if="todayDate >= dateToTimestamp(challenge.endDate)">
+                    <span class="text-xs text-gray-500">Завершен</span>
+                  </div>
+                  <div v-else>
+                    <span class="text-xs text-lime-600">Активные</span>
+                  </div>
                 </div>
               </div>
+              <a class="text-blue-600 hover:underline cursor-pointer">Подробнее</a>
             </div>
-            <a class="text-blue-600 hover:underline cursor-pointer">Подробнее</a>
           </div>
+          <span v-if="teams.length > 3" class="text-xs text-gray-500" @click="openMyHistoryChallengesSlideover">Посмотреть все</span>
         </div>
       </div>
       <div class="form__block">
@@ -222,7 +235,7 @@ function openMyAchievementSlideover () {
 }
 
 .form__block {
-  @apply flex justify-center max-w-[560px] flex-col;
+  @apply flex max-w-[560px] flex-col;
 }
 
 .input__block {
@@ -319,6 +332,10 @@ function openMyAchievementSlideover () {
 }
 
 .info__achievements {
+  margin-bottom: 48px;
+}
+
+.history-wrapper {
   margin-bottom: 48px;
 }
 </style>
