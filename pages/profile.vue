@@ -3,11 +3,14 @@ import ErrorScreen from '~/components/Screens/ErrorScreen.vue'
 import { user } from '~/composables/userMock'
 import { historyChallenges } from '~/composables/userHistoryChallengeMock'
 import { achievementsProf } from '~/composables/achievementProfileMock'
+import { teams } from '~/composables/userTeamsMock'
+import MyTeams from '~/components/SlideOvers/MyTeams.vue'
 
 definePageMeta({
   middleware: 'auth'
 })
 
+const slideover = useSlideover()
 const image = ref('')
 // const date = ref('')
 const position = ref('')
@@ -40,6 +43,18 @@ function setActiveButton (button: 'personal' | 'team') {
   activeButton.value = button
 }
 
+const count = ref(0)
+
+function openMyTeamsSlideover () {
+  count.value += 1
+
+  slideover.open(MyTeams, {
+    count: count.value,
+    onClose: slideover.close,
+    teams
+  })
+}
+
 </script>
 
 <template>
@@ -63,7 +78,7 @@ function setActiveButton (button: 'personal' | 'team') {
               <a class="text-blue-600 hover:underline cursor-pointer">Подробнее</a>
             </div>
           </div>
-          <span v-if="teams.length > 3" class="text-xs text-gray-500">Посмотреть все</span>
+          <span v-if="teams.length > 3" class="text-xs text-gray-500" @click="openMyTeamsSlideover">Посмотреть все</span>
         </div>
         <div class="info__achievements">
           <h2 class="info__title">Мои достижения</h2>
@@ -92,6 +107,7 @@ function setActiveButton (button: 'personal' | 'team') {
               </div>
             </div>
           </div>
+          <span v-if="achievementsProf.length > 3" class="text-xs text-gray-500" @click="openMyTeamsSlideover">Посмотреть все</span>
         </div>
         <div class="info__history">
           <h2 class="info__title">История достижений</h2>
@@ -176,6 +192,10 @@ function setActiveButton (button: 'personal' | 'team') {
         от администратора 😎
       </error-screen>
     </template>
+    <UContainer>
+      <NuxtPage />
+    </UContainer>
+    <USlideovers />
   </NuxtLayout>
 </template>
 
@@ -284,5 +304,9 @@ function setActiveButton (button: 'personal' | 'team') {
     width: 100%;
     height: 100%;
   }
+}
+
+.info__achievements {
+  margin-bottom: 48px;
 }
 </style>
