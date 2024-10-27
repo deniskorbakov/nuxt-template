@@ -15,6 +15,6 @@ const isOpen = ref(false)
 <style scoped lang="scss">
 .custom-bg {
   background: #f6f6f6;
-  max-height: 90vh;
+  height: 90vh;
 }
 </style>

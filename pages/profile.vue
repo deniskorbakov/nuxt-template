@@ -5,6 +5,7 @@ import { historyChallenges } from '~/composables/userHistoryChallengeMock'
 import { achievementsProf } from '~/composables/achievementProfileMock'
 import { teams } from '~/composables/userTeamsMock'
 import MyTeams from '~/components/SlideOvers/MyTeams.vue'
+import MyAchievement from '~/components/SlideOvers/MyAchievement.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -44,6 +45,7 @@ function setActiveButton (button: 'personal' | 'team') {
 }
 
 const count = ref(0)
+// const count2 = ref(0)
 
 function openMyTeamsSlideover () {
   count.value += 1
@@ -52,6 +54,16 @@ function openMyTeamsSlideover () {
     count: count.value,
     onClose: slideover.close,
     teams
+  })
+}
+
+function openMyAchievementSlideover () {
+  count.value += 1
+
+  slideover.open(MyAchievement, {
+    count: count.value,
+    onClose: slideover.close,
+    achievementsProf
   })
 }
 
@@ -107,7 +119,7 @@ function openMyTeamsSlideover () {
               </div>
             </div>
           </div>
-          <span v-if="achievementsProf.length > 3" class="text-xs text-gray-500" @click="openMyTeamsSlideover">Посмотреть все</span>
+          <span v-if="achievementsProf.length > 3" class="text-xs text-gray-500" @click="openMyAchievementSlideover">Посмотреть все</span>
         </div>
         <div class="info__history">
           <h2 class="info__title">История достижений</h2>
